@@ -1,6 +1,6 @@
-# TRo-robot-experiment (DEDS paper)
+# Lab multi-robot experiment achieving task plan synthesized from "parallel decomposition and concurrent satisfaction of LTL task specification"
 
-runs real robots but does not have scalability computation experiments.
+this project runs real robots but does not have scalability computation experiments.
 
 Ubuntu14.0 
 
@@ -10,14 +10,10 @@ Python2
 
 JAVA 6.0
 
-Lab old computer (red case one, pw: clemson2015)
-
 
 ***
-This is a large project. 
-It contains the task planning (automaton-based) with JAVA; and motion planning (Turtlebot3, Khepera II) with ROS. 
-Each has a folder, i.e., "TaskAllocAut" and "mrs_smp". 
-Each folder contains its own read me files. `Please explore into each foler for the readme.md` files.
+This project contains the task planning package (automaton-based) with JAVA; and motion planning package (Turtlebot3, Khepera II) with ROS. 
+Each has a folder, i.e., "TaskAllocAut" and "mrs_smp". Each folder contains its own read me files. `Please explore into each foler for the readme.md` files.
 
 
 ## Package1. TaskAllocAut (ouput task plan in a string format)
