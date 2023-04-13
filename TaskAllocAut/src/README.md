@@ -4,7 +4,7 @@ Ubuntu14.0
 
 Java 6.0
 
-Note: this package is to generate the task plans for MRS in the two cases of TR-O version of the paper. All the operations need to be conducted with `Eclipse` IDE (in folder `~/Eclipse/`). The lab directory of the files is `~/catkin_ws/src/mrs_taskplan/node/AutoRobots/TaskAllocAut/`
+Note: this package is to generate the task plans for MRS in the two cases of the paper. All the operations need to be conducted with `Eclipse` IDE (in folder `~/Eclipse/`). The lab directory of the files is `~/catkin_ws/src/mrs_taskplan/node/AutoRobots/TaskAllocAut/`
 
 ## Step0. open `Eclipse` IDE in folder `~/Eclipse/`
 
