@@ -1,0 +1,135 @@
+#! /usr/bin/env python
+
+import rospy
+import actionlib
+from mrs_smp.msg import TaskAction, TaskGoal, TaskResult
+
+global keph0_task_client, keph1_task_client, keph2_task_client, keph3_task_client
+global kephera_clients
+
+class Transition:
+    def __init__(self, task, robotidlist):
+        self.task = task # task described action
+        self.robotidlist = robotidlist # action associated robot list
+
+class Taskplan:
+    """Task plan definition, e.g.: [state1, state2, state3] --[transition]-->
+    [state1', state2', state3']"""
+    def __init__(self, tasklist, transList, robotlist, teamid, eventsubsetList):
+        self.tasklist = tasklist # state (task-tuple) List
+        self.transList = transList # transition list
+        self.robotlist = robotlist # robot index permutation of state (task)
+        self.teamid = teamid # current served subtask automaton index
+        self.eventsubsetList = eventsubsetList # (List of) event set of all task automata)
+        self.stepcount = 0 # index of task plan proceeding
+
+
+    def send_goal(self):
+        """task planner client: send individual task to each robot's action server"""
+        goal = TaskGoal()
+        nextgoal = TaskGoal()
+        while self.stepcount < len(self.transList): # when tasks exist
+            # generate current goal
+            current_transition = self.transList[self.stepcount]
+            goal.teamid = self.teamid
+            goal.task = current_transition.task[0]
+            goal.rid = current_transition.robotidlist[0]
+            print "task is: " + goal.task
+            # deal with the single event
+            if len(current_transition.robotidlist) == 1:
+                # generate next goal if it exists
+                if self.stepcount + 1 < len(self.transList):
+                    next_transition = self.transList[self.stepcount + 1]
+                    nextgoal.task = next_transition.task[0]
+                    nextgoal.teamid = self.teamid
+                    if len(next_transition.robotidlist) == 1:
+                        nextgoal.rid = next_transition.robotidlist[0]
+
+                # send goals based on the parallel property
+                if not self.are_tasks_parallel(goal, nextgoal): # not in parallel
+                    kephera_clients[goal.rid].wait_for_server()
+                    kephera_clients[goal.rid].send_goal(goal)
+                    print "goal id:" + str(goal.rid) + "goal task:" + goal.task
+                    kephera_clients[goal.rid].wait_for_result()
+
+                    self.stepcount = self.stepcount + 1
+                else: # In parallel
+                    kephera_clients[goal.rid].wait_for_server()
+                    kephera_clients[goal.rid].send_goal(goal)
+                    kephera_clients[nextgoal.rid].wait_for_server()
+                    kephera_clients[nextgoal.rid].send_goal(nextgoal)
+
+                    kephera_clients[goal.rid].wait_for_result()
+                    kephera_clients[nextgoal.rid].wait_for_result()
+
+                    self.stepcount = self.stepcount + 2
+            # deal with the cooperative event
+            elif len(current_transition.robotidlist) > 1:
+                # generate cooperative goal if it exists
+                cooperative_goal = TaskGoal()
+                cooperative_goal.task = current_transition.task[1]
+                cooperative_goal.rid = current_transition.robotidlist[1]
+                cooperative_goal.teamid = self.teamid
+
+                # send goals based on the cooperative property
+                kephera_clients[goal.rid].wait_for_server()
+                kephera_clients[goal.rid].send_goal(goal)
+                kephera_clients[cooperative_goal.rid].wait_for_server()
+                kephera_clients[cooperative_goal.rid].send_goal(cooperative_goal)
+
+                kephera_clients[goal.rid].wait_for_result()
+                kephera_clients[cooperative_goal.rid].wait_for_result()
+
+                self.stepcount = self.stepcount + 1
+
+
+    def are_tasks_parallel(self, goal1, goal2):
+        """two goals are parallel executable if goal1 and goal2 are
+        in different event subsets"""
+        taskset = {goal1.task, goal2.task}
+
+        for eventsubset in self.eventsubsetList:
+            if taskset.issubset(eventsubset):
+                return False
+
+        if goal1.rid != goal2.rid:
+            return True
+        else:
+            return False
+
+
+# task list: store a sequence of (event, rid): dictionary
+tasklist1 = [('a', 'epslion'), ('b', 'epslion'), ('c', 'epslion'), ('epslion', 'd'),\
+   ('epslion', 'e'), ('epslion', 'f'), ('g', 'epslion')]
+transList1 = [Transition('a',[1]), Transition('b',[1]), Transition('c',[1]), Transition('d',[1]),\
+   Transition('e',[1]), Transition('f',[1]), Transition('g',[1])]
+robotlist1 = 1
+subeventList1 = [['a', 'b', 'c', 'd', 'e', 'f', 'g']]
+
+try:
+    rospy.init_node('taskplanning', anonymous=True)
+
+    """First, construct four clients for all the (four) robots"""
+    # #####################################################
+    keph0_task_client = actionlib.SimpleActionClient('kephera0task', TaskAction)
+
+
+    keph1_task_client = actionlib.SimpleActionClient('kephera1task', TaskAction)
+    #keph1_task_client.wait_for_server()
+
+    keph2_task_client = actionlib.SimpleActionClient('kephera2task', TaskAction)
+    #keph2_task_client.wait_for_server()
+
+    keph3_task_client = actionlib.SimpleActionClient('kephera3task', TaskAction)
+    #keph3_task_client.wait_for_server()
+    # ######################################################
+    kephera_clients = [keph0_task_client, keph1_task_client, keph2_task_client, keph3_task_client]
+
+    taskplan1 = Taskplan(tasklist1, transList1, robotlist1, 0, subeventList1)
+
+    taskplan1.send_goal()
+
+    rospy.spin()
+except rospy.ROSInterruptException:
+        pass
+
