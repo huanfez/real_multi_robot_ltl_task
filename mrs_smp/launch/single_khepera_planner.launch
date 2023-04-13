@@ -1,0 +1,9 @@
+<launch>
+    <!--<node pkg="mrs_smp" type ="robot2_client.py"  name="robot2_client" output="screen" />
+    <node pkg="mrs_smp" type ="robot2_server.py"  name="robot2_server" output="screen" />-->
+    <node pkg="mrs_smp" type ="khepera_client.py"  name="robot2_client" output="screen" />
+<!--    <node pkg="mrs_smp" type ="kephera1_server.py"  name="robot1_server" output="screen" />-->
+    <node pkg="mrs_smp" type ="khepera_server.py"  name="robot2_server" output="screen" />
+<!--    <node pkg="mrs_smp" type ="kephera3_server.py"  name="robot3_server" output="screen" />-->
+<!--    <node pkg="mrs_smp" type ="kephera4_server.py"  name="robot4_server" output="screen" />-->
+</launch>

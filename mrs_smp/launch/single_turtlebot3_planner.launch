@@ -1,0 +1,5 @@
+<launch>
+    <node pkg="mrs_smp" type ="turtlebot3_client.py"  name="turtlebot3_client" output="screen" />
+    <node pkg="mrs_smp" type ="turtlebot3_server.py"  name="turtlebot3_server" output="screen" />
+    <node pkg="mrs_smp" type ="plot_node.py"  name="plot" output="screen" />
+</launch>

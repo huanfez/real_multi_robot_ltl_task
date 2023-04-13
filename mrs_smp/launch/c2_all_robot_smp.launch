@@ -1,0 +1,10 @@
+<launch>
+    <node pkg="mrs_smp" type ="khepera1_server.py"  name="khepera1_server" output="screen" />
+    <node pkg="mrs_smp" type ="khepera2_server.py"  name="khepera2_server" output="screen" />
+    <node pkg="mrs_smp" type ="turtlebot3_34_server.py"  name="turtlebot34_server" output="screen" />
+    <node pkg="mrs_smp" type ="turtlebot3_37_server.py"  name="turtlebot37_server" output="screen" />
+    <node pkg="mrs_smp" type ="c2_mrs_planner_client1.py"  name="taskplanning1" output="screen" />
+    <node pkg="mrs_smp" type ="c2_mrs_planner_client2.py"  name="taskplanning2" output="screen" />
+    <node pkg="mrs_smp" type ="c2_taskplans_provider.py" name="taskplans" output="screen"/>
+    <node pkg="mrs_smp" type ="plot_node.py"  name="plot" output="screen" />
+</launch>

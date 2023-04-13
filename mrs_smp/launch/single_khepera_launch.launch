@@ -1,0 +1,8 @@
+<launch>
+    <node name="phase_space" pkg="phase_space_node" type="phasespacenode" />
+<!--    <node name="KB" pkg="Kh_and_Parrot" type="playerros_node_phasespace" args="-ip 192.168.1.11"/>-->
+    <node name="KC" pkg="Kh_and_Parrot" type="playerros_node_phasespace" args="-ip 192.168.1.10"/>
+<!--    <node name="KA" pkg="Kh_and_Parrot" type="playerros_node_phasespace" args="-ip 192.168.1.12"/>-->
+<!--    <node name="KD" pkg="Kh_and_Parrot" type="playerros_node_phasespace" args="-ip 192.168.1.13"/>-->
+</launch>
+

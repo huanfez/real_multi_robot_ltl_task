@@ -1,0 +1,3 @@
+<launch>
+    <node name="phase_space" pkg="phase_space_node" type="phasespacenode" required="true"/>
+</launch>
